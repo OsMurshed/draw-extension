@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draw Extension</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Draw Extension</h1>
+
+    <!-- Drawing Mode Toggle -->
+    <div class="section">
+      <button id="toggleBtn" class="toggle-btn">
+        <span class="toggle-text">Enable Drawing</span>
+      </button>
+    </div>
+
+    <!-- Tools Section -->
+    <div class="section">
+      <h2>Tools</h2>
+      <div class="tool-buttons">
+        <button class="tool-btn active" data-tool="pen" title="Pen (Ctrl+P)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>
+          </svg>
+        </button>
+        <button class="tool-btn" data-tool="highlighter" title="Highlighter (Ctrl+H)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 01-2.8 0l-5.2-5.2a2 2 0 010-2.8L14 4"/>
+          </svg>
+        </button>
+        <button class="tool-btn" data-tool="eraser" title="Eraser (Ctrl+E)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 20H7L3 16c-.6-.6-.6-1.5 0-2.1l10-10c.6-.6 1.5-.6 2.1 0l6 6c.6.6.6 1.5 0 2.1L13 20"/><path d="M6 11l8 8"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Size Section -->
+    <div class="section">
+      <h2>Size</h2>
+      <div class="size-buttons">
+        <button class="size-btn" data-size="3" title="Small">
+          <span class="size-dot small"></span>
+        </button>
+        <button class="size-btn active" data-size="8" title="Medium">
+          <span class="size-dot medium"></span>
+        </button>
+        <button class="size-btn" data-size="16" title="Large">
+          <span class="size-dot large"></span>
+        </button>
+        <button class="size-btn" data-size="32" title="Extra Large">
+          <span class="size-dot xlarge"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Color Section -->
+    <div class="section" id="colorSection">
+      <h2>Color</h2>
+      <div class="color-buttons">
+        <button class="color-btn active" data-color="#ff0000" style="background:#ff0000" title="Red"></button>
+        <button class="color-btn" data-color="#00ff00" style="background:#00ff00" title="Green"></button>
+        <button class="color-btn" data-color="#0000ff" style="background:#0000ff" title="Blue"></button>
+        <button class="color-btn" data-color="#ffff00" style="background:#ffff00" title="Yellow"></button>
+        <button class="color-btn" data-color="#ff00ff" style="background:#ff00ff" title="Magenta"></button>
+        <button class="color-btn" data-color="#ffa500" style="background:#ffa500" title="Orange"></button>
+        <button class="color-btn" data-color="#000000" style="background:#000000" title="Black"></button>
+        <button class="color-btn" data-color="#ffffff" style="background:#ffffff" title="White"></button>
+        <button class="color-btn" data-color="#00ffff" style="background:#00ffff" title="Cyan"></button>
+        <button class="color-btn" data-color="#ff69b4" style="background:#ff69b4" title="Pink"></button>
+        <button class="color-btn" data-color="#800080" style="background:#800080" title="Purple"></button>
+        <button class="color-btn" data-color="#8b4513" style="background:#8b4513" title="Brown"></button>
+        <button class="color-btn" data-color="#808080" style="background:#808080" title="Gray"></button>
+        <button class="color-btn" data-color="#32cd32" style="background:#32cd32" title="Lime"></button>
+        <button class="color-btn" data-color="#000080" style="background:#000080" title="Navy"></button>
+        <button class="color-btn" data-color="#ff7f50" style="background:#ff7f50" title="Coral"></button>
+      </div>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="section">
+      <h2>Actions</h2>
+      <div class="action-buttons">
+        <button id="undoBtn" class="action-btn" title="Undo (Ctrl+Z)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
+          Undo
+        </button>
+        <button id="redoBtn" class="action-btn" title="Redo (Ctrl+Y)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"/></svg>
+          Redo
+        </button>
+        <button id="clearBtn" class="action-btn" title="Clear All">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="section">
+      <h2>Export</h2>
+      <div class="action-buttons">
+        <button id="exportPngBtn" class="action-btn" title="Download as PNG">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+          PNG
+        </button>
+        <button id="copyBtn" class="action-btn" title="Copy to Clipboard">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div class="section">
+      <h2>Settings</h2>
+      <label class="checkbox-label">
+        <input type="checkbox" id="autoSaveCheckbox" checked>
+        <span>Auto-save annotations</span>
+      </label>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

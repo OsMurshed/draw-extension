@@ -1,0 +1,29 @@
+#draw-extension-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  touch-action: none;
+}
+
+#draw-extension-canvas.drawing-mode {
+  pointer-events: auto;
+  cursor: crosshair;
+}
+
+#draw-extension-canvas.drawing-mode.tool-pen {
+  cursor: crosshair;
+}
+
+#draw-extension-canvas.drawing-mode.tool-highlighter {
+  cursor: text;
+}
+
+#draw-extension-canvas.drawing-mode.tool-eraser {
+  cursor: cell;
+}
+
+#draw-extension-canvas.hidden {
+  display: none;
+}
