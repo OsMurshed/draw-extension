@@ -90,6 +90,12 @@
       background: #4CAF50;
     }
 
+    .hint-text {
+      font-size: 12px;
+      color: #888;
+      margin-left: 10px;
+    }
+
     /* Content area */
     #content {
       position: fixed;
@@ -157,6 +163,7 @@
     <input type="text" id="url-input" placeholder="https://example.com" />
     <button id="load-btn">Load Page</button>
     <button id="draw-btn">Enable Drawing</button>
+    <span class="hint-text" id="scroll-hint" style="display:none;">Disable drawing to scroll iframe</span>
   </div>
 
   <div id="content">
@@ -181,6 +188,7 @@
     const pageFrame = document.getElementById('page-frame');
     const welcome = document.getElementById('welcome');
     const errorMsg = document.getElementById('error-msg');
+    const scrollHint = document.getElementById('scroll-hint');
 
     // Initialize drawing tool
     DrawingTool.init({ autoLoad: false });
@@ -247,9 +255,11 @@
       if (DrawingTool.isEnabled()) {
         drawBtn.textContent = 'Disable Drawing';
         drawBtn.classList.add('active');
+        scrollHint.style.display = 'inline';
       } else {
         drawBtn.textContent = 'Enable Drawing';
         drawBtn.classList.remove('active');
+        scrollHint.style.display = 'none';
       }
     }
 
