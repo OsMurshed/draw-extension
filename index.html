@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draw on Any Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* Top bar */
+    #toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: #2a2a4e;
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      gap: 10px;
+      z-index: 10003;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    #toolbar label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #url-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      background: #1a1a2e;
+      color: #fff;
+      outline: none;
+    }
+
+    #url-input:focus {
+      box-shadow: 0 0 0 2px #4CAF50;
+    }
+
+    #url-input::placeholder {
+      color: #888;
+    }
+
+    #load-btn, #draw-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #load-btn {
+      background: #4CAF50;
+      color: #fff;
+    }
+
+    #load-btn:hover {
+      background: #45a049;
+    }
+
+    #draw-btn {
+      background: #ff6b6b;
+      color: #fff;
+    }
+
+    #draw-btn:hover {
+      background: #ee5a5a;
+    }
+
+    #draw-btn.active {
+      background: #4CAF50;
+    }
+
+    /* Content area */
+    #content {
+      position: fixed;
+      top: 50px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    #page-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+    }
+
+    /* Welcome screen */
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #welcome h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    #welcome p {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    #welcome .hint {
+      background: #2a2a4e;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    /* Error message */
+    #error-msg {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff6b6b;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 10004;
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <label>URL:</label>
+    <input type="text" id="url-input" placeholder="https://example.com" />
+    <button id="load-btn">Load Page</button>
+    <button id="draw-btn">Enable Drawing</button>
+  </div>
+
+  <div id="content">
+    <div id="welcome">
+      <h1>Draw on Any Page</h1>
+      <p>Enter a URL above and click "Load Page" to get started.</p>
+      <div class="hint">
+        Tip: Some websites block loading in frames.<br>
+        Try Wikipedia, news sites, or your own pages.
+      </div>
+    </div>
+    <iframe id="page-frame" style="display:none;"></iframe>
+  </div>
+
+  <div id="error-msg"></div>
+
+  <script src="web/drawing-tool.js"></script>
+  <script>
+    const urlInput = document.getElementById('url-input');
+    const loadBtn = document.getElementById('load-btn');
+    const drawBtn = document.getElementById('draw-btn');
+    const pageFrame = document.getElementById('page-frame');
+    const welcome = document.getElementById('welcome');
+    const errorMsg = document.getElementById('error-msg');
+
+    // Initialize drawing tool
+    DrawingTool.init({ autoLoad: false });
+
+    // Load URL from query parameter if present
+    const params = new URLSearchParams(window.location.search);
+    const urlParam = params.get('url');
+    if (urlParam) {
+      urlInput.value = urlParam;
+      loadPage(urlParam);
+    }
+
+    // Load button click
+    loadBtn.addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      if (url) {
+        loadPage(url);
+      }
+    });
+
+    // Enter key in input
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const url = urlInput.value.trim();
+        if (url) {
+          loadPage(url);
+        }
+      }
+    });
+
+    // Draw button toggle
+    drawBtn.addEventListener('click', () => {
+      DrawingTool.toggle();
+      updateDrawButton();
+    });
+
+    function loadPage(url) {
+      // Add https if missing
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+        urlInput.value = url;
+      }
+
+      // Update URL in address bar (for sharing)
+      const newUrl = window.location.pathname + '?url=' + encodeURIComponent(url);
+      window.history.replaceState({}, '', newUrl);
+
+      // Hide welcome, show frame
+      welcome.style.display = 'none';
+      pageFrame.style.display = 'block';
+
+      // Load the page
+      pageFrame.src = url;
+
+      // Handle load errors
+      pageFrame.onerror = () => {
+        showError('Failed to load page. The site may block embedding.');
+      };
+
+      hideError();
+    }
+
+    function updateDrawButton() {
+      if (DrawingTool.isEnabled()) {
+        drawBtn.textContent = 'Disable Drawing';
+        drawBtn.classList.add('active');
+      } else {
+        drawBtn.textContent = 'Enable Drawing';
+        drawBtn.classList.remove('active');
+      }
+    }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.style.display = 'block';
+      setTimeout(hideError, 5000);
+    }
+
+    function hideError() {
+      errorMsg.style.display = 'none';
+    }
+
+    // Keyboard shortcut: Ctrl+D to toggle drawing
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        DrawingTool.toggle();
+        updateDrawButton();
+      }
+    });
+  </script>
+</body>
+</html>
